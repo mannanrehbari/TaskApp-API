@@ -2,11 +2,13 @@ package com.backend.rest.controller;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,6 +54,12 @@ public class ServiceRequestController {
 			return reqOpt.get();
 		}
 		return null;
+	}
+	
+	@GetMapping("/all")
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<ServiceRequest> allRequests(){
+		return serviceReqRepository.findAll();		
 	}
 	
 }
