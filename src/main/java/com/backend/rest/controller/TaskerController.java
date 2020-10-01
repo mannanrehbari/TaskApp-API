@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -14,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +29,6 @@ import com.backend.rest.security.payload.request.SignupRequest;
 import com.backend.rest.security.payload.response.MessageResponse;
 import com.backend.rest.security.repository.RoleRepository;
 import com.backend.rest.security.repository.UserRepository;
-import com.backend.rest.transfer.TaskerService;
 
 @RestController
 @RequestMapping("/api/v1/tasker")
@@ -78,6 +79,31 @@ public class TaskerController {
 		
 		return taskerss;
 	}
+	
+	
+	@GetMapping("/type/{serviceTypeId}")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<TaskerRequest> getTaskersByType(@PathVariable("serviceTypeId") Long serviceId){
+		List<Object []> serviceTaskers = userRepository.findTaskerServiceMappingByServiceType(serviceId);
+		List<Long> serviceTaskerIds = new ArrayList<>();
+		serviceTaskerIds = serviceTaskers.stream().map(
+				(serviceTasker)->{ return Long.valueOf(serviceTasker[0].toString());
+				}).collect(Collectors.toList());
+		;
+		
+		List<User> foundTaskers = userRepository.findAllById(serviceTaskerIds);
+		List<TaskerRequest> taskers = new ArrayList<>();
+		for(User tasker: foundTaskers) {
+			TaskerRequest taskerr = new TaskerRequest();
+			taskerr.setEmail(tasker.getEmail());
+			taskerr.setId(tasker.getId());
+			taskerr.setServiceTypeId(serviceId);
+			taskers.add(taskerr);
+		}
+		
+		return taskers;
+	}
+	
 	
 	@PostMapping("/add")
 	@PreAuthorize("hasRole('ADMIN')")

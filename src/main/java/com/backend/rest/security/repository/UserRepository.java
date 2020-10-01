@@ -46,5 +46,10 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	public List<Object []> findTaskerServiceMapping();
 	
 	
+	@Query(
+		value = "SELECT taskerId, serviceId FROM tasker_service ts WHERE ts.serviceId = ?1",
+		nativeQuery = true)
+	public List<Object[]> findTaskerServiceMappingByServiceType(Long serviceId);
+	
 	
 }
