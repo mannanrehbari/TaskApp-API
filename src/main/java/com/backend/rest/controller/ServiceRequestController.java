@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -17,18 +18,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.rest.entity.PaymentInformation;
 import com.backend.rest.entity.ServiceRequest;
 import com.backend.rest.entity.TaskerActionLog;
 import com.backend.rest.enums.RequestStatus;
+import com.backend.rest.manager.PaymentInformationManager;
 import com.backend.rest.manager.ServiceRequestManager;
 import com.backend.rest.manager.TrackingIdManager;
-import com.backend.rest.repository.PaymentInformationRepository;
 import com.backend.rest.repository.ServiceRequestRepository;
 import com.backend.rest.repository.TaskerActionLogRepository;
-import com.backend.rest.transfer.RequestComplete;
 import com.backend.rest.transfer.RequestSearchCriteria;
 
 import net.jodah.expiringmap.ExpiringMap;
@@ -44,7 +48,7 @@ public class ServiceRequestController {
 	private TaskerActionLogRepository taskerActionLogRepository;
 	
 	@Autowired
-	private PaymentInformationRepository paymentInfoRepository;
+	private PaymentInformationManager paymentInformationManager;
 	
 
 	@Autowired
@@ -161,26 +165,42 @@ public class ServiceRequestController {
 		return null;
 	}
 	
-	@PostMapping("/complete")
+	@RequestMapping(value = "/complete-payment", method = RequestMethod.POST, consumes = {"multipart/form-data"})
 	@PreAuthorize("hasRole('ADMIN') or hasRole('TASKER')")
-	public ServiceRequest completeRequest(@RequestBody RequestComplete completeRequest) {
-		ServiceRequest serviceRequest = completeRequest.getRequest();
-		PaymentInformation paymentInfo = completeRequest.getPaymentInfo();		
-		
-		Optional<ServiceRequest> reqOpt = serviceReqRepository.findById(serviceRequest.getId());
-		
-		if (reqOpt.isPresent()) {
-			ServiceRequest req = reqOpt.get();
-			req.setRequestStatus(RequestStatus.COMPLETED);
+	@ResponseBody
+	public PaymentInformation completeRequestPayment(
+			@RequestPart("paymentInformation") PaymentInformation paymentInformation,
+			@RequestPart("requestReceipt") MultipartFile file) throws Exception {
+		try {
+			Optional<ServiceRequest> reqOpt = serviceReqRepository.findByTrackingId(paymentInformation.getReqTrackingId());
+			if(reqOpt.isPresent()) {
+				ServiceRequest req = reqOpt.get();
+				req.setRequestStatus(RequestStatus.COMPLETED);
+				serviceReqRepository.save(req);
+			} else {
+				throw new NoSuchElementException();
+			}
+			paymentInformation.setPaymentReportDate(LocalDateTime.now());
+			paymentInformation.setName(
+							paymentInformation.getReqTrackingId() + "-" + 
+							paymentInformation.getTaskerId() + "-" +
+							LocalDateTime.now().getDayOfMonth() + "_" + 
+							LocalDateTime.now().getMonthValue());
+			paymentInformation.setImageByte(file.getBytes());
+			paymentInformation.setType(file.getContentType());
+			return paymentInformationManager.savePaymentInfo(paymentInformation);
 			
-			paymentInfo.setPaymentDate(LocalDateTime.now());			
-			paymentInfoRepository.save(paymentInfo);
-			
-			return serviceReqRepository.save(req);			
+		} catch(Exception e) {
+			throw new Exception(e.getMessage());
 		}
-		return null;
 	}
 	
+	@GetMapping("/paymentinformation/{reqTrackingId}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TASKER')")
+	@ResponseBody
+	public PaymentInformation getPaymentInformation(@PathVariable("reqTrackingId") String reqTrackingId) {
+		return paymentInformationManager.findByReqTrackingId(reqTrackingId);
+	}
 
 	// 10 minute expiration async method
 	public void expireRequests(ServiceRequest serviceRequest) {
