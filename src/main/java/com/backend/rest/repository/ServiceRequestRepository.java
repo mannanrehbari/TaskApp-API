@@ -17,6 +17,8 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
 	
 	List<ServiceRequest> findByAssignedTaskerId(Long assignedTaskerId);
 	
+	List<ServiceRequest> findBySeekerEmail(String email);
+	
 	// search criteria combinations
 	// locationId, serviceTypeId, requestStatus
 	List<ServiceRequest> findByLocationId(Integer locationId);

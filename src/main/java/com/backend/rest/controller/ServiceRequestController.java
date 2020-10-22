@@ -95,6 +95,12 @@ public class ServiceRequestController {
 	public List<ServiceRequest> requestsByCriteria(@RequestBody RequestSearchCriteria criteria){
 		return srvcReqManager.requestsByCriteria(criteria);
 	}
+	
+	@GetMapping("/{email}")
+	@PreAuthorize("hasRole('ADMIN') or hasRole('TASKER') or hasRole('SEEKER')")
+	public List<ServiceRequest> requestsByEmail(@PathVariable("email") String email){
+		return serviceReqRepository.findBySeekerEmail(email);		
+	}
 
 	@PostMapping("/assign")
 	@PreAuthorize("hasRole('ADMIN')")
