@@ -41,7 +41,7 @@ public class PaymentInformation {
 	// image properties
 	private String name;
 	private String type;
-	@Column(name = "imageByte", length = 1000)
+	@Column(columnDefinition = "LONGBLOB")
 	private byte[] imageByte;
 	
 	public PaymentInformation() {
