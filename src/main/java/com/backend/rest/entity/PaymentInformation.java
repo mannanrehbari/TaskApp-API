@@ -49,13 +49,14 @@ public class PaymentInformation {
 	
 	public PaymentInformation(Long taskerId, String reqTrackingId, 
 			String paymentConfirmationNo, Long paymentAmount,
-			PaymentMethod paymentMethod, LocalDateTime paymentReportDate) {
+			PaymentMethod paymentMethod) {
 		this.taskerId = taskerId;
 		this.reqTrackingId = reqTrackingId;
 		this.paymentConfirmationNo = paymentConfirmationNo;
 		this.paymentAmount = paymentAmount;
 		this.paymentMethod = paymentMethod;
 	}
+	
 
 	public Long getId() {
 		return id;

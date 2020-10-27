@@ -34,6 +34,8 @@ import com.backend.rest.manager.TrackingIdManager;
 import com.backend.rest.repository.ServiceRequestRepository;
 import com.backend.rest.repository.TaskerActionLogRepository;
 import com.backend.rest.transfer.RequestSearchCriteria;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.jodah.expiringmap.ExpiringMap;
 
@@ -56,6 +58,8 @@ public class ServiceRequestController {
 	
 	@Autowired
 	private ServiceRequestManager srvcReqManager;
+	
+	ObjectMapper objectMapper = new ObjectMapper();
 
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -175,10 +179,11 @@ public class ServiceRequestController {
 	@PreAuthorize("hasRole('ADMIN') or hasRole('TASKER')")
 	@ResponseBody
 	public PaymentInformation completeRequestPayment(
-			@RequestPart("paymentInformation") PaymentInformation paymentInformation,
+			@RequestPart("paymentInformation") String paymentInformation,
 			@RequestPart("requestReceipt") MultipartFile file) throws Exception {
 		try {
-			Optional<ServiceRequest> reqOpt = serviceReqRepository.findByTrackingId(paymentInformation.getReqTrackingId());
+			PaymentInformation paymentInfo = objectMapper.readValue(paymentInformation, PaymentInformation.class);
+			Optional<ServiceRequest> reqOpt = serviceReqRepository.findByTrackingId(paymentInfo.getReqTrackingId());
 			if(reqOpt.isPresent()) {
 				ServiceRequest req = reqOpt.get();
 				req.setRequestStatus(RequestStatus.COMPLETED);
@@ -186,15 +191,15 @@ public class ServiceRequestController {
 			} else {
 				throw new NoSuchElementException();
 			}
-			paymentInformation.setPaymentReportDate(LocalDateTime.now());
-			paymentInformation.setName(
-							paymentInformation.getReqTrackingId() + "-" + 
-							paymentInformation.getTaskerId() + "-" +
+			paymentInfo.setPaymentReportDate(LocalDateTime.now());
+			paymentInfo.setName(
+							paymentInfo.getReqTrackingId() + "-" + 
+							paymentInfo.getTaskerId() + "-" +
 							LocalDateTime.now().getDayOfMonth() + "_" + 
 							LocalDateTime.now().getMonthValue());
-			paymentInformation.setImageByte(file.getBytes());
-			paymentInformation.setType(file.getContentType());
-			return paymentInformationManager.savePaymentInfo(paymentInformation);
+			paymentInfo.setImageByte(file.getBytes());
+			paymentInfo.setType(file.getContentType());
+			return paymentInformationManager.savePaymentInfo(paymentInfo);
 			
 		} catch(Exception e) {
 			throw new Exception(e.getMessage());
