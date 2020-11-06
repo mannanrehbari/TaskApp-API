@@ -1,5 +1,6 @@
 package com.backend.rest.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,14 +22,15 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
 	
 	// search criteria combinations
 	// locationId, serviceTypeId, requestStatus
-	List<ServiceRequest> findByLocationId(Integer locationId);
-	List<ServiceRequest> findByServiceTypeId(Integer serviceTypeId);
-	List<ServiceRequest> findByRequestStatus(RequestStatus requestStatus);
+	List<ServiceRequest> findByLocationIdAndRequestDateBetween(Integer locationId, Date minDate, Date maxDate);
+	List<ServiceRequest> findByServiceTypeIdAndRequestDateBetween(Integer serviceTypeId, Date minDate, Date maxDate);
+	List<ServiceRequest> findByRequestStatusAndRequestDateBetween(RequestStatus requestStatus, Date minDate, Date maxDate);
 	
-	List<ServiceRequest> findByLocationIdAndServiceTypeId(Integer locationId, Integer serviceTypeId);
-	List<ServiceRequest> findByLocationIdAndRequestStatus(Integer locationId, RequestStatus requestStatus);
-	List<ServiceRequest> findByServiceTypeIdAndRequestStatus(Integer serviceTypeId, RequestStatus requestStatus);
+	List<ServiceRequest> findByLocationIdAndServiceTypeIdAndRequestDateBetween(Integer locationId, Integer serviceTypeId, Date minDate, Date maxDate);
+	List<ServiceRequest> findByLocationIdAndRequestStatusAndRequestDateBetween(Integer locationId, RequestStatus requestStatus, Date minDate, Date maxDate);
+	List<ServiceRequest> findByServiceTypeIdAndRequestStatusAndRequestDateBetween(Integer serviceTypeId, RequestStatus requestStatus, Date minDate, Date maxDate);
 	
-	List<ServiceRequest> findByLocationIdAndServiceTypeIdAndRequestStatus(Integer locationId, Integer serviceTypeId, RequestStatus requestStatus);
+	List<ServiceRequest> findByLocationIdAndServiceTypeIdAndRequestStatusAndRequestDateBetween(Integer locationId, Integer serviceTypeId, RequestStatus requestStatus, Date minDate, Date maxDate);
+	List<ServiceRequest> findAllByRequestDateBetween(Date minDate, Date maxDate);
 
 }

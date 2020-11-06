@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.backend.rest.entity.ServiceRequest;
 import com.backend.rest.repository.ServiceRequestRepository;
-import com.backend.rest.transfer.RequestSearchCriteria;
+import com.backend.rest.transfer.RequestFilter;
 
 @Service
 public class ServiceRequestManager {
@@ -15,30 +15,28 @@ public class ServiceRequestManager {
 	@Autowired
 	private ServiceRequestRepository srvcReqRepository;
 	
-	public List<ServiceRequest> requestsByCriteria(RequestSearchCriteria ct){
+	public List<ServiceRequest> requestsByCriteria(RequestFilter ct){
 		// find all cases
 		//location, serviceType, requestStatus
 		System.out.println(ct);
 		if(ct.getLocationId() != null && ct.getServiceTypeId() == null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findByLocationId(ct.getLocationId());
+			return srvcReqRepository.findByLocationIdAndRequestDateBetween(ct.getLocationId(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() != null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findByServiceTypeId(ct.getServiceTypeId());
+			return srvcReqRepository.findByServiceTypeIdAndRequestDateBetween(ct.getServiceTypeId(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() == null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByRequestStatus(ct.getRequestStatus());
+			return srvcReqRepository.findByRequestStatusAndRequestDateBetween(ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() != null && ct.getServiceTypeId() != null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findByLocationIdAndServiceTypeId(ct.getLocationId(), ct.getServiceTypeId());
+			return srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestDateBetween(ct.getLocationId(), ct.getServiceTypeId(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() != null && ct.getServiceTypeId() == null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByLocationIdAndRequestStatus(ct.getLocationId(), ct.getRequestStatus());
+			return srvcReqRepository.findByLocationIdAndRequestStatusAndRequestDateBetween(ct.getLocationId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() != null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByServiceTypeIdAndRequestStatus(ct.getServiceTypeId(), ct.getRequestStatus());
+			return srvcReqRepository.findByServiceTypeIdAndRequestStatusAndRequestDateBetween(ct.getServiceTypeId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() != null && ct.getServiceTypeId() != null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestStatus(ct.getLocationId(), ct.getServiceTypeId(), ct.getRequestStatus());
-		} else if (ct.getLocationId() == null && ct.getServiceTypeId() == null && ct.getRequestStatus() == null ) {
-			return srvcReqRepository.findAll();
+			return srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestStatusAndRequestDateBetween(ct.getLocationId(), ct.getServiceTypeId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
+		} else if (ct.getLocationId() == null && ct.getServiceTypeId() == null && ct.getRequestStatus() == null) {
+			return srvcReqRepository.findAllByRequestDateBetween(ct.getMinDate(), ct.getMaxDate());
 		}
 		return null;
 	}
-	
-	
 
 }

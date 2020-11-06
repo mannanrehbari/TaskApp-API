@@ -33,8 +33,7 @@ import com.backend.rest.manager.ServiceRequestManager;
 import com.backend.rest.manager.TrackingIdManager;
 import com.backend.rest.repository.ServiceRequestRepository;
 import com.backend.rest.repository.TaskerActionLogRepository;
-import com.backend.rest.transfer.RequestSearchCriteria;
-import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.backend.rest.transfer.RequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.jodah.expiringmap.ExpiringMap;
@@ -95,8 +94,9 @@ public class ServiceRequestController {
 		return serviceReqRepository.findAll();
 	}
 	
+	//replicating below
 	@PostMapping("/search-criteria")
-	public List<ServiceRequest> requestsByCriteria(@RequestBody RequestSearchCriteria criteria){
+	public List<ServiceRequest> requestsByCriteria(@RequestBody RequestFilter criteria){
 		return srvcReqManager.requestsByCriteria(criteria);
 	}
 	
