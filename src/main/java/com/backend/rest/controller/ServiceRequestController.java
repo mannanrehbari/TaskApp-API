@@ -78,6 +78,15 @@ public class ServiceRequestController {
 		System.out.println(serviceRequest.toString());
 		return serviceReqRepository.save(serviceRequest);
 	}
+	
+	@PostMapping("/edit")
+	public ServiceRequest editRequest(@Valid @RequestBody ServiceRequest serviceRequest) {
+		Optional<ServiceRequest> reqOpt = serviceReqRepository.findByTrackingId(serviceRequest.getTrackingId());
+		if(reqOpt.isPresent()) {
+			return serviceReqRepository.save(serviceRequest);
+		}
+		return new ServiceRequest();
+	}
 
 	@GetMapping("/track/{trackingId}")
 	public ServiceRequest trackRequest(@PathVariable("trackingId") String trackingId) {
