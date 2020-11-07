@@ -11,7 +11,6 @@ public class RequestFilter {
 	RequestStatus requestStatus;
 
 	// strings for clarity
-	String location;
 	String serviceType;
 
 	Date minDate;
@@ -21,13 +20,12 @@ public class RequestFilter {
 		super();
 	}
 
-	public RequestFilter(Integer locationId, Integer serviceTypeId, RequestStatus requestStatus, String location, String serviceType,
+	public RequestFilter(Integer locationId, Integer serviceTypeId, RequestStatus requestStatus, String serviceType,
 			Date minDate, Date maxDate) {
 		super();
 		this.locationId = locationId;
 		this.serviceTypeId = serviceTypeId;
 		this.requestStatus = requestStatus;
-		this.location = location;
 		this.serviceType = serviceType;
 		this.minDate = minDate;
 		this.maxDate = maxDate;
@@ -57,14 +55,6 @@ public class RequestFilter {
 		this.requestStatus = requestStatus;
 	}
 
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
 	public String getServiceType() {
 		return serviceType;
 	}
@@ -92,7 +82,7 @@ public class RequestFilter {
 	@Override
 	public String toString() {
 		return "RequestFilter [locationId=" + locationId + ", serviceTypeId=" + serviceTypeId + ", requestStatus="
-				+ requestStatus + ", location=" + location + ", serviceType=" + serviceType + ", minDate=" + minDate
+				+ requestStatus + ", serviceType=" + serviceType + ", minDate=" + minDate
 				+ ", maxDate=" + maxDate + "]";
 	}
 	

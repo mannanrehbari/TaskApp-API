@@ -19,24 +19,26 @@ public class ServiceRequestManager {
 		// find all cases
 		//location, serviceType, requestStatus
 		System.out.println(ct);
+		List<ServiceRequest> list = null;
 		if(ct.getLocationId() != null && ct.getServiceTypeId() == null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findByLocationIdAndRequestDateBetween(ct.getLocationId(), ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findByLocationIdAndRequestDateBetween(ct.getLocationId(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() != null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findByServiceTypeIdAndRequestDateBetween(ct.getServiceTypeId(), ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findByServiceTypeIdAndRequestDateBetween(ct.getServiceTypeId(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() == null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByRequestStatusAndRequestDateBetween(ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findByRequestStatusAndRequestDateBetween(ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() != null && ct.getServiceTypeId() != null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestDateBetween(ct.getLocationId(), ct.getServiceTypeId(), ct.getMinDate(), ct.getMaxDate());
+			list =  srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestDateBetween(ct.getLocationId(), ct.getServiceTypeId(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() != null && ct.getServiceTypeId() == null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByLocationIdAndRequestStatusAndRequestDateBetween(ct.getLocationId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findByLocationIdAndRequestStatusAndRequestDateBetween(ct.getLocationId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() != null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByServiceTypeIdAndRequestStatusAndRequestDateBetween(ct.getServiceTypeId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findByServiceTypeIdAndRequestStatusAndRequestDateBetween(ct.getServiceTypeId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() != null && ct.getServiceTypeId() != null && ct.getRequestStatus() != null) {
-			return srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestStatusAndRequestDateBetween(ct.getLocationId(), ct.getServiceTypeId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findByLocationIdAndServiceTypeIdAndRequestStatusAndRequestDateBetween(ct.getLocationId(), ct.getServiceTypeId(), ct.getRequestStatus(), ct.getMinDate(), ct.getMaxDate());
 		} else if (ct.getLocationId() == null && ct.getServiceTypeId() == null && ct.getRequestStatus() == null) {
-			return srvcReqRepository.findAllByRequestDateBetween(ct.getMinDate(), ct.getMaxDate());
+			list = srvcReqRepository.findAllByRequestDateBetween(ct.getMinDate(), ct.getMaxDate());
 		}
-		return null;
+		System.out.println("List of matching requests: " + list.size());
+		return list;
 	}
 
 }
