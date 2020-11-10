@@ -29,10 +29,12 @@ import com.backend.rest.entity.ServiceRequest;
 import com.backend.rest.entity.TaskerActionLog;
 import com.backend.rest.enums.RequestStatus;
 import com.backend.rest.manager.PaymentInformationManager;
+import com.backend.rest.manager.SMSCodeManager;
 import com.backend.rest.manager.ServiceRequestManager;
 import com.backend.rest.manager.TrackingIdManager;
 import com.backend.rest.repository.ServiceRequestRepository;
 import com.backend.rest.repository.TaskerActionLogRepository;
+import com.backend.rest.transfer.PhoneCodeRequest;
 import com.backend.rest.transfer.RequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,9 +53,8 @@ public class ServiceRequestController {
 	@Autowired
 	private PaymentInformationManager paymentInformationManager;
 	
-
 	@Autowired
-	private TrackingIdManager trackingIdManager;
+	private SMSCodeManager smsCodeManager;
 	
 	@Autowired
 	private ServiceRequestManager srvcReqManager;
@@ -63,21 +64,35 @@ public class ServiceRequestController {
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 	private Map<ServiceRequest, LocalDateTime> requestExpiringMap = ExpiringMap.builder()
-			.expiration(3, TimeUnit.MINUTES).asyncExpirationListener((reqExp, val) -> {
+			.expiration(15, TimeUnit.MINUTES).asyncExpirationListener((reqExp, val) -> {
 				this.expireRequests((ServiceRequest) reqExp);
 			}).build();
 
 	@PostMapping("/add")
 	public ServiceRequest addRequest(@Valid @RequestBody ServiceRequest serviceRequest) {
-		String trackingId = trackingIdManager.uniqueTrackingId();
+//		String trackingId = trackingIdManager.uniqueTrackingId();
 
-		serviceRequest.setTrackingId(trackingId);
+//		serviceRequest.setTrackingId(trackingId);
 		serviceRequest.setCreatedDateTime(LocalDateTime.now());
 		serviceRequest.setRequestStatus(RequestStatus.STARTED);
 
 		System.out.println(serviceRequest.toString());
 		return serviceReqRepository.save(serviceRequest);
 	}
+	
+	@PostMapping("/sendvercode")
+	public String sendVerificationToPhone(@RequestBody PhoneCodeRequest request) {
+		System.out.println(request);
+		if(smsCodeManager.createVerCode(request.getPhoneNumber())) {
+			return "Code Created";
+		} else {
+			return "Code was not created";
+		}
+		
+	}
+	
+	
+	
 	
 	@PostMapping("/edit")
 	public ServiceRequest editRequest(@Valid @RequestBody ServiceRequest serviceRequest) {
@@ -118,7 +133,7 @@ public class ServiceRequestController {
 	@PostMapping("/assign")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ServiceRequest assignTasker(@Valid @RequestBody ServiceRequest serviceRequest) {
-		System.out.println("Map size on assign: " + this.requestExpiringMap.size());
+		requestExpiringMap.remove(serviceRequest);
 		Optional<ServiceRequest> opt = serviceReqRepository.findById(serviceRequest.getId());
 		if (opt.isPresent()) {
 			ServiceRequest reqFromDb = opt.get();
@@ -138,7 +153,7 @@ public class ServiceRequestController {
 	@PostMapping("/unassign")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ServiceRequest unassignTasker(@Valid @RequestBody ServiceRequest serviceRequest) {
-		System.out.println("Map size: " + this.requestExpiringMap.size());
+		requestExpiringMap.remove(serviceRequest);
 		Optional<ServiceRequest> reqOpt = serviceReqRepository.findById(serviceRequest.getId());
 		if (reqOpt.isPresent()) {
 			ServiceRequest req = reqOpt.get();
@@ -147,7 +162,7 @@ public class ServiceRequestController {
 			req.setRequestStatus(RequestStatus.STARTED);
 			return serviceReqRepository.save(req);
 		}
-		return null;
+		return new ServiceRequest();
 	}
 
 	@GetMapping("/tasker/{taskerId}")
@@ -159,6 +174,7 @@ public class ServiceRequestController {
 	@PreAuthorize("hasRole('ADMIN') or hasRole('TASKER')")
 	public ServiceRequest acceptTaskerRequest(@RequestBody ServiceRequest serviceRequest) {
 		System.out.println("Map size on accept: " + this.requestExpiringMap.size());
+		
 		Optional<ServiceRequest> reqOpt = serviceReqRepository.findById(serviceRequest.getId());
 		if (reqOpt.isPresent()) {
 			ServiceRequest req = reqOpt.get();
