@@ -209,7 +209,6 @@ public class TaskerController {
 
 		TaskerDetails newTaskerDetails = objectMapper.readValue(taskerDetails, TaskerDetails.class);
 		newTaskerDetails.setUserId(savedUser.getId());
-		newTaskerDetails.setServiceTypeId(taskerReq.getServiceTypeId());
 		newTaskerDetails.setImgType(file.getContentType());
 		newTaskerDetails.setCnicImg(file.getBytes());
 		TaskerDetails fromDb = taskerDetailsRepository.save(newTaskerDetails);
