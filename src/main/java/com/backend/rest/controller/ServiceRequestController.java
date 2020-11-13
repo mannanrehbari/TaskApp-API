@@ -57,6 +57,9 @@ public class ServiceRequestController {
 	private SMSCodeManager smsCodeManager;
 	
 	@Autowired
+	private TrackingIdManager trackingIdManager;
+	
+	@Autowired
 	private ServiceRequestManager srvcReqManager;
 	
 	ObjectMapper objectMapper = new ObjectMapper();
@@ -70,9 +73,9 @@ public class ServiceRequestController {
 
 	@PostMapping("/add")
 	public ServiceRequest addRequest(@Valid @RequestBody ServiceRequest serviceRequest) {
-//		String trackingId = trackingIdManager.uniqueTrackingId();
+		String trackingId = trackingIdManager.uniqueTrackingId();
 
-//		serviceRequest.setTrackingId(trackingId);
+		serviceRequest.setTrackingId(trackingId);
 		serviceRequest.setCreatedDateTime(LocalDateTime.now());
 		serviceRequest.setRequestStatus(RequestStatus.STARTED);
 
