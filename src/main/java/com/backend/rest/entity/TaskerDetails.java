@@ -12,10 +12,9 @@ import javax.persistence.Table;
 public class TaskerDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-
 	private Long userId;
+
+	
 	
 	private Long serviceTypeId;
 
@@ -36,9 +35,9 @@ public class TaskerDetails {
 	public TaskerDetails() {
 	}
 
-	public TaskerDetails(Long id, Long userId, Long serviceTypeId, String firstName, String lastName, String phoneNo, String email, String cnicNo,
+	public TaskerDetails(Long userId, Long serviceTypeId, String firstName, String lastName, String phoneNo, String email, String cnicNo,
 			String imgName, String imgType, byte[] cnicImg) {
-		this.id = id;
+
 		this.userId = userId;
 		this.serviceTypeId = serviceTypeId;
 		this.firstName = firstName;
@@ -49,14 +48,6 @@ public class TaskerDetails {
 		this.imgName = imgName;
 		this.imgType = imgType;
 		this.cnicImg = cnicImg;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Long getUserId() {
