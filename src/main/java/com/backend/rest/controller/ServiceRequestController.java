@@ -46,18 +46,9 @@ public class ServiceRequestController {
 
 	@Autowired
 	private ServiceRequestRepository serviceReqRepository;
-
-	@Autowired
-	private TaskerActionLogRepository taskerActionLogRepository;
 	
 	@Autowired
 	private PaymentInformationManager paymentInformationManager;
-	
-	@Autowired
-	private SMSCodeManager smsCodeManager;
-	
-	@Autowired
-	private TrackingIdManager trackingIdManager;
 	
 	@Autowired
 	private ServiceRequestManager srvcReqManager;
@@ -73,29 +64,11 @@ public class ServiceRequestController {
 
 	@PostMapping("/add")
 	public ServiceRequest addRequest(@Valid @RequestBody ServiceRequest serviceRequest) {
-		String trackingId = trackingIdManager.uniqueTrackingId();
-
-		serviceRequest.setTrackingId(trackingId);
 		serviceRequest.setCreatedDateTime(LocalDateTime.now());
 		serviceRequest.setRequestStatus(RequestStatus.STARTED);
-
 		System.out.println(serviceRequest.toString());
 		return serviceReqRepository.save(serviceRequest);
 	}
-	
-	@PostMapping("/sendvercode")
-	public String sendVerificationToPhone(@RequestBody PhoneCodeRequest request) {
-		System.out.println(request);
-		if(smsCodeManager.createVerCode(request.getPhoneNumber())) {
-			return "Code Created";
-		} else {
-			return "Code was not created";
-		}
-		
-	}
-	
-	
-	
 	
 	@PostMapping("/edit")
 	public ServiceRequest editRequest(@Valid @RequestBody ServiceRequest serviceRequest) {
