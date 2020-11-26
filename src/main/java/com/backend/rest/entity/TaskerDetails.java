@@ -14,8 +14,6 @@ public class TaskerDetails {
 	@Id
 	private Long userId;
 
-	
-	
 	private Long serviceTypeId;
 
 	private String firstName;

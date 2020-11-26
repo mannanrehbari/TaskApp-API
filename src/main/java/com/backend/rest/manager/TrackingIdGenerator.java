@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.backend.rest.repository.ServiceRequestRepository;
 
 @Service
-public class TrackingIdManager {
+public class TrackingIdGenerator {
 	
 	
 	@Autowired

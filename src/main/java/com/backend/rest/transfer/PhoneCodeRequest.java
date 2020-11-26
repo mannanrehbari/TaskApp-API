@@ -13,7 +13,7 @@ public class PhoneCodeRequest {
 	public PhoneCodeRequest() {
 	}
 	
-	public PhoneCodeRequest(String phoneNumber, String smsCode, SMSCodeStatus status) {
+	public PhoneCodeRequest(String phoneNumber, String smsCode, String message, SMSCodeStatus status) {
 		super();
 		this.phoneNumber = phoneNumber;
 		this.smsCode = smsCode;

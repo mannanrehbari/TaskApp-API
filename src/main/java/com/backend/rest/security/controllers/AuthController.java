@@ -9,19 +9,19 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.rest.entity.UsersProfile;
+import com.backend.rest.repository.UsersProfileRepository;
 import com.backend.rest.security.enums.ERole;
 import com.backend.rest.security.jwt.JwtUtils;
 import com.backend.rest.security.models.Role;
@@ -43,6 +43,9 @@ public class AuthController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UsersProfileRepository usersProfileRepository;
 
 	@Autowired
 	RoleRepository roleRepository;
@@ -90,7 +93,14 @@ public class AuthController {
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 		roles.add(userRole);
 		user.setRoles(roles);
-		userRepository.save(user);
+		User savedUser = userRepository.save(user);
+		
+		UsersProfile userProfile = new UsersProfile();
+		userProfile.setId(savedUser.getId());
+		userProfile.setFirstName(signUpRequest.getFirstName());
+		userProfile.setLastName(signUpRequest.getLastName());
+		userProfile.setEmailVer(false);
+		usersProfileRepository.save(userProfile);
 
 		return ResponseEntity.ok(new MessageResponse("User signup successful!"));
 	}

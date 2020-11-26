@@ -18,9 +18,7 @@ import com.backend.rest.enums.SMSCodeStatus;
 import com.backend.rest.exceptions.SMSVerificationException;
 import com.backend.rest.transfer.PhoneCodeRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.jodah.expiringmap.ExpiringMap;
 
@@ -28,7 +26,7 @@ import net.jodah.expiringmap.ExpiringMap;
 public class SMSCodeManager {
 
 	@Autowired
-	private TrackingIdManager trackingIdManager;
+	private TrackingIdGenerator trackingIdManager;
 
 	@Value("${iwork.sms.client.hash}")
 	private String smsHash;
