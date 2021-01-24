@@ -16,7 +16,7 @@ public class TrackingIdGenerator {
 	public String uniqueTrackingId() {
 		String trackingId;
 		while(true) {
-			 trackingId= RandomStringUtils.randomAlphanumeric(6);
+			 trackingId= RandomStringUtils.randomNumeric(6);
 			 if(!serviceRequestRepository.existsByTrackingId(trackingId)) {
 				 break;
 			 }
