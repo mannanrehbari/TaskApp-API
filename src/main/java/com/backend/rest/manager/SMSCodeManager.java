@@ -3,7 +3,6 @@ package com.backend.rest.manager;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -43,9 +42,9 @@ public class SMSCodeManager {
 	private static Long smsCodeLife = 5L;
 	
 	private RestTemplate restTemplate = new RestTemplate();
-	private Map<String, String> phoneCodeMap = ExpiringMap.builder().expiration(smsCodeLife, TimeUnit.MINUTES).build();
+	private Map<String, Long> phoneCodeMap = ExpiringMap.builder().expiration(smsCodeLife, TimeUnit.MINUTES).build();
 
-	private String sendSMS(String phoneNumber, String trackingId) throws JsonMappingException, JsonProcessingException {
+	private String sendSMS(String phoneNumber, Long trackingId) throws JsonMappingException, JsonProcessingException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36");
@@ -77,7 +76,7 @@ public class SMSCodeManager {
 				pcReq.setStatus(SMSCodeStatus.LIMIT_EXCEEDED);
 				return pcReq;
 			}
-			String newTrackingId = this.trackingIdManager.uniqueTrackingId();
+			Long newTrackingId = this.trackingIdManager.uniqueTrackingId();
 			phoneCodeMap.put(phoneNumber, newTrackingId);
 			String clientResp = sendSMS(phoneNumber, newTrackingId);
 			pcReq.setMessage(clientResp);
@@ -91,11 +90,13 @@ public class SMSCodeManager {
 	}
 	
 	//verify trackingId for phoneNumber
-	public PhoneCodeRequest verifyPhoneCode(String phoneNumber, String trackingId) throws SMSVerificationException {
-		String inMapCode = phoneCodeMap.get(phoneNumber);
+	public PhoneCodeRequest verifyPhoneCode(String phoneNumber, Long trackingId) throws SMSVerificationException {
+		Long inMapCode = phoneCodeMap.get(phoneNumber);
 		PhoneCodeRequest pcReq = new PhoneCodeRequest();
 		pcReq.setPhoneNumber(phoneNumber);
-		if (StringUtils.isNotEmpty(inMapCode) && StringUtils.equals(inMapCode, trackingId)) {
+		System.out.println(inMapCode);
+		System.out.println(trackingId);
+		if (inMapCode.equals(trackingId)) {
 			pcReq.setMessage("Input matches the sms code");
 			pcReq.setStatus(SMSCodeStatus.SUCCESSFUL);
 			return pcReq;

@@ -29,12 +29,8 @@ import com.backend.rest.entity.ServiceRequest;
 import com.backend.rest.entity.TaskerActionLog;
 import com.backend.rest.enums.RequestStatus;
 import com.backend.rest.manager.PaymentInformationManager;
-import com.backend.rest.manager.SMSCodeManager;
 import com.backend.rest.manager.ServiceRequestManager;
-import com.backend.rest.manager.TrackingIdGenerator;
 import com.backend.rest.repository.ServiceRequestRepository;
-import com.backend.rest.repository.TaskerActionLogRepository;
-import com.backend.rest.transfer.PhoneCodeRequest;
 import com.backend.rest.transfer.RequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -192,6 +188,7 @@ public class ServiceRequestController {
 			} else {
 				throw new NoSuchElementException();
 			}
+			paymentInfo.setTotalCharges(paymentInfo.getServiceCharges() + paymentInfo.getOtherCharges());
 			paymentInfo.setPaymentReportDate(LocalDateTime.now());
 			paymentInfo.setName(
 							paymentInfo.getReqTrackingId() + "-" + 
@@ -237,21 +234,23 @@ public class ServiceRequestController {
 			case ASSIGNED:
 				request.setAssignedTaskerId(null);
 				request.setAssignedTime(null);
-				request.setRequestStatus(currentStatus.STARTED);
-				taskerActionLog.setStatusAction(currentStatus.EXPIRED);
+				request.setRequestStatus(RequestStatus.STARTED);
+				taskerActionLog.setStatusAction(RequestStatus.EXPIRED);
 				break;
 			case CANCELLED:
 				request.setAssignedTaskerId(null);
 				request.setAssignedTime(null);
-				request.setRequestStatus(currentStatus.STARTED);
-				taskerActionLog.setStatusAction(currentStatus.CANCELLED);
+				request.setRequestStatus(RequestStatus.STARTED);
+				taskerActionLog.setStatusAction(RequestStatus.CANCELLED);
 				break;
 			case IN_PROGRESS:
-				taskerActionLog.setStatusAction(currentStatus.IN_PROGRESS);
-				request.setRequestStatus(currentStatus.IN_PROGRESS);
+				taskerActionLog.setStatusAction(RequestStatus.IN_PROGRESS);
+				request.setRequestStatus(RequestStatus.IN_PROGRESS);
 				break;
 			case COMPLETED:
-				taskerActionLog.setStatusAction(currentStatus.COMPLETED);
+				taskerActionLog.setStatusAction(RequestStatus.COMPLETED);
+				break;
+			default:
 				break;
 			}
 

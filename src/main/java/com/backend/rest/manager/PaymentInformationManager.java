@@ -19,8 +19,5 @@ public class PaymentInformationManager {
 	public PaymentInformation findByReqTrackingId(String reqTrackingId) {
 		return paymentInformationRepository.findByReqTrackingId(reqTrackingId).get();
 	}
-	
-	
-	
 
 }

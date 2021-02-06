@@ -27,7 +27,7 @@ public class SmsController {
 	@GetMapping("/verify/{phoneNumber}/{trackingId}")
 	public PhoneCodeRequest verifyCode(
 			@PathVariable("phoneNumber") String phoneNumber,
-			@PathVariable("trackingId") String trackingId			
+			@PathVariable("trackingId") Long trackingId			
 			) throws SMSVerificationException {
 		return smsManager.verifyPhoneCode(phoneNumber, trackingId);
 	}

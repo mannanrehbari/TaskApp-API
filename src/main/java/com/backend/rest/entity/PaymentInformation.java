@@ -1,6 +1,7 @@
 package com.backend.rest.entity;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -30,7 +31,9 @@ public class PaymentInformation {
 	private String reqTrackingId;
 	
 	private String paymentConfirmationNo;
-	private Long paymentAmount;
+	private Long serviceCharges;
+	private Long otherCharges;
+	private Long totalCharges;
 	
 	@Convert(converter = PaymentMethodJpaConverter.class)
 	private PaymentMethod paymentMethod;
@@ -48,12 +51,15 @@ public class PaymentInformation {
 	}
 	
 	public PaymentInformation(Long taskerId, String reqTrackingId, 
-			String paymentConfirmationNo, Long paymentAmount,
+			String paymentConfirmationNo, Long serviceCharges,
+			Long otherCharges, Long totalCharges,
 			PaymentMethod paymentMethod) {
 		this.taskerId = taskerId;
 		this.reqTrackingId = reqTrackingId;
 		this.paymentConfirmationNo = paymentConfirmationNo;
-		this.paymentAmount = paymentAmount;
+		this.serviceCharges = serviceCharges;
+		this.otherCharges = otherCharges;
+		this.totalCharges = totalCharges;
 		this.paymentMethod = paymentMethod;
 	}
 	
@@ -98,12 +104,28 @@ public class PaymentInformation {
 		this.paymentConfirmationNo = paymentConfirmationNo;
 	}
 
-	public Long getPaymentAmount() {
-		return paymentAmount;
+	public Long getServiceCharges() {
+		return serviceCharges;
 	}
 
-	public void setPaymentAmount(Long paymentAmount) {
-		this.paymentAmount = paymentAmount;
+	public void setServiceCharges(Long serviceCharges) {
+		this.serviceCharges = serviceCharges;
+	}
+
+	public Long getOtherCharges() {
+		return otherCharges;
+	}
+
+	public void setOtherCharges(Long otherCharges) {
+		this.otherCharges = otherCharges;
+	}
+
+	public Long getTotalCharges() {
+		return totalCharges;
+	}
+
+	public void setTotalCharges(Long totalCharges) {
+		this.totalCharges = totalCharges;
 	}
 
 	public PaymentMethod getPaymentMethod() {
@@ -149,8 +171,10 @@ public class PaymentInformation {
 	@Override
 	public String toString() {
 		return "PaymentInformation [id=" + id + ", taskerId=" + taskerId + ", seekerId=" + seekerId + ", reqTrackingId="
-				+ reqTrackingId + ", paymentConfirmationNo=" + paymentConfirmationNo + ", paymentAmount="
-				+ paymentAmount + ", paymentMethod=" + paymentMethod + ", paymentReportDate=" + paymentReportDate + "]";
-	}	
+				+ reqTrackingId + ", paymentConfirmationNo=" + paymentConfirmationNo + ", serviceCharges="
+				+ serviceCharges + ", otherCharges=" + otherCharges + ", totalCharges=" + totalCharges
+				+ ", paymentMethod=" + paymentMethod + ", paymentReportDate=" + paymentReportDate + ", name=" + name
+				+ ", type=" + type + ", imageByte=" + Arrays.toString(imageByte) + "]";
+	}
 
 }
