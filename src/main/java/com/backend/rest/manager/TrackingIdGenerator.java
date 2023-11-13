@@ -1,23 +1,23 @@
 package com.backend.rest.manager;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.backend.rest.repository.ServiceRequestRepository;
 
 @Service
-public class TrackingIdManager {
+public class TrackingIdGenerator {
 	
 	
 	@Autowired
 	private ServiceRequestRepository serviceRequestRepository;
 	
-	public String uniqueTrackingId() {
-		String trackingId;
+	public Long uniqueTrackingId() {
+		Long trackingId;
 		while(true) {
-			 trackingId= RandomStringUtils.randomAlphanumeric(6);
-			 if(!serviceRequestRepository.existsByTrackingId(trackingId)) {
+			 trackingId= RandomUtils.nextLong(100000L, 999999L);
+			 if(!serviceRequestRepository.existsByTrackingId(String.valueOf(trackingId))) {
 				 break;
 			 }
 		}

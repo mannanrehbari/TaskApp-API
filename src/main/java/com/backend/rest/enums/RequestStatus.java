@@ -3,8 +3,9 @@ package com.backend.rest.enums;
 public enum RequestStatus {
 	
 	STARTED,
-	PENDING,
+	ASSIGNED,
 	IN_PROGRESS,
+	EXPIRED,
 	CANCELLED,
 	COMPLETED
 

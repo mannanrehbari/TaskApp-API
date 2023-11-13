@@ -9,7 +9,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.rest.entity.UsersProfile;
+import com.backend.rest.repository.UsersProfileRepository;
 import com.backend.rest.security.enums.ERole;
 import com.backend.rest.security.jwt.JwtUtils;
 import com.backend.rest.security.models.Role;
@@ -42,6 +43,9 @@ public class AuthController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	UsersProfileRepository usersProfileRepository;
 
 	@Autowired
 	RoleRepository roleRepository;
@@ -89,37 +93,20 @@ public class AuthController {
 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 		roles.add(userRole);
 		user.setRoles(roles);
-		userRepository.save(user);
+		User savedUser = userRepository.save(user);
+		
+		UsersProfile userProfile = new UsersProfile();
+		userProfile.setId(savedUser.getId());
+		userProfile.setFirstName(signUpRequest.getFirstName());
+		userProfile.setLastName(signUpRequest.getLastName());
+		userProfile.setEmailVer(false);
+		usersProfileRepository.save(userProfile);
 
 		return ResponseEntity.ok(new MessageResponse("User signup successful!"));
 	}
 	
 	
-	@PostMapping("/addtasker")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> addTasker(@Valid @RequestBody SignupRequest signUpRequest) {
 
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-		}
-
-		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-			return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
-		}
-
-		// Create new user's account
-		User user = new User(signUpRequest.getEmail(), signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()));
-
-		Set<Role> roles = new HashSet<>();
-		Role userRole = roleRepository.findByName(ERole.ROLE_TASKER)
-				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-		roles.add(userRole);
-		user.setRoles(roles);
-		userRepository.save(user);
-
-		return ResponseEntity.ok(new MessageResponse("Tasker registered successfully!"));
-	}
 	
 
 }

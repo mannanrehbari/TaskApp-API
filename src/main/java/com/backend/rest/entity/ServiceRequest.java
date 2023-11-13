@@ -1,5 +1,6 @@
 package com.backend.rest.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Convert;
@@ -22,13 +23,13 @@ public class ServiceRequest {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer id;
+	private Long id;
 	
 	// assigned by system on valid input
 	private String trackingId;
 	
 	// assigned by users later
-	private Integer assignedTaskerId;
+	private Long assignedTaskerId;
 	private String seekerEmail;
 	private String reqLat;
 	private String reqLng;
@@ -62,9 +63,13 @@ public class ServiceRequest {
 	@Convert(converter = RequestStatusJpaConverter.class)
 	private RequestStatus requestStatus; //system
 
-	@Temporal(TemporalType.TIMESTAMP)
+	
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-	private Date createdDateTime; //system
+	private LocalDateTime createdDateTime; //system
+	
+	
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime assignedTime;
 
 	public ServiceRequest() {
 	}
@@ -85,11 +90,11 @@ public class ServiceRequest {
 	}
 
 
-	public Integer getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -173,19 +178,19 @@ public class ServiceRequest {
 		this.requestDate = requestDate;
 	}
 
-	public Date getCreatedDateTime() {
+	public LocalDateTime getCreatedDateTime() {
 		return createdDateTime;
 	}
 
-	public void setCreatedDateTime(Date createdDateTime) {
+	public void setCreatedDateTime(LocalDateTime createdDateTime) {
 		this.createdDateTime = createdDateTime;
 	}
 
-	public Integer getAssignedTaskerId() {
+	public Long getAssignedTaskerId() {
 		return assignedTaskerId;
 	}
 
-	public void setAssignedTaskerId(Integer assignedTaskerId) {
+	public void setAssignedTaskerId(Long assignedTaskerId) {
 		this.assignedTaskerId = assignedTaskerId;
 	}
 
@@ -212,8 +217,15 @@ public class ServiceRequest {
 	public void setReqLng(String reqLng) {
 		this.reqLng = reqLng;
 	}
-
 	
+	public LocalDateTime getAssignedTime() {
+		return assignedTime;
+	}
+
+	public void setAssignedTime(LocalDateTime assignedTime) {
+		this.assignedTime = assignedTime;
+	}
+
 	@Override
 	public String toString() {
 		return "ServiceRequest [id=" + id + ", trackingId=" + trackingId + ", assignedTaskerId=" + assignedTaskerId
